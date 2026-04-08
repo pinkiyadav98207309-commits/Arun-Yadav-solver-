@@ -1,0 +1,30 @@
+        // Summarize PDF
+        async function summarizePDF() {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('summaryLength', summaryLength.value);
+
+            loading.classList.add('show');
+            hideError();
+
+            try {
+                // ✅ FIXED: Use correct endpoint
+                const response = await fetch('http://localhost:3000/api/summarize', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || `HTTP Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displaySummary(data);
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
